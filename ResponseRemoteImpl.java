@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ResponseRemoteImpl implements Response {
-    public static final int PORT = 4040;
+    public static final int PORT = 4444;
 
     public void request(String server) {
         Socket sock;
@@ -25,7 +25,7 @@ public class ResponseRemoteImpl implements Response {
 
             if (response.toString().contains("/")) {
                 String hostIP = response.toString().split(":")[0];
-                Socket sock2 = new Socket(hostIP, 22);
+                Socket sock2 = new Socket(hostIP, 8080);
 
                 System.out.println("big ben");
             }
