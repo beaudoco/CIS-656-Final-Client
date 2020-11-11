@@ -88,7 +88,7 @@ class ServerWait extends Thread {
 
     public void run() {
         int maxPendingConn = 10;
-        final int port = 4444;
+        final int port = 8080;
         ServerSocket servsock = null;
         ClientList clientList = new ClientList();
         try {
