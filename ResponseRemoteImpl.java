@@ -1,7 +1,12 @@
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ResponseRemoteImpl implements Response {
     public static final int PORT = 4444;
@@ -13,11 +18,15 @@ public class ResponseRemoteImpl implements Response {
         try {
             sock = new Socket(server, PORT);
 //            sock = new Socket("localhost", PORT);
+            new ServerWait().start();
 
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
             Object response = isr.readObject();
 
             if (response.toString().contains("/")) {
+                String hostIP = response.toString().split(":")[0];
+                sock = new Socket(hostIP, PORT);
+
                 System.out.println("big ben");
             }
 
@@ -58,10 +67,93 @@ public class ResponseRemoteImpl implements Response {
         }
     }
 
+    @Override
+    public String welcomeMessage() {
+        return ("Hello, you are the host client \r\n");
+    }
+
     private StringRpcRequest generateServerRequest(String val) {
         StringRpcRequest stringRpcRequest = new StringRpcRequest();
         stringRpcRequest.setString(val);
         stringRpcRequest.setMethod("request");
         return stringRpcRequest;
+    }
+}
+
+class ServerWait extends Thread {
+    static int clientCount = 0;
+    public ServerWait() {
+
+    }
+
+    public void run() {
+        int maxPendingConn = 10;
+        final int port = 4444;
+        ServerSocket servsock = null;
+        ClientList clientList = new ClientList();
+        try {
+            servsock = new ServerSocket(port, maxPendingConn);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        while (true) {
+            Socket sock = null;
+            try {
+                sock = servsock.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            String clientName = sock.getRemoteSocketAddress().toString();
+
+            clientList.addClient(clientName);
+            clientCount++;
+
+            new ServerThread(sock, clientCount, clientList, clientName).start();
+
+            System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
+        }
+    }
+}
+
+
+class ServerThread extends Thread {
+    protected Socket sock;
+    protected int clientNumber;
+    private Response response = new ResponseRemoteImpl();
+    ClientList clientList;
+    String clientName;
+
+    public ServerThread(Socket clientSocket, int clientNumber, ClientList clientList, String clientName) {
+        this.sock = clientSocket;
+        this.clientNumber = clientNumber;
+        this.clientList = clientList;
+        this.clientName = clientName;
+    }
+
+    public void run() {
+        // Get I/O streams from the socket
+        ObjectOutputStream out = null;
+        try {
+            out = new ObjectOutputStream(sock.getOutputStream());
+        } catch (Exception e) {
+            System.out.println("error!");
+        }
+
+        try {
+            if (clientList.getClients().size() == 1) {
+                out.writeObject(response.welcomeMessage());
+                out.flush();
+            } else {
+                List<String> tmpClientList = new ArrayList<>();
+                tmpClientList.addAll(clientList.getClients());
+                tmpClientList.remove(clientName);
+                int randomNum = ThreadLocalRandom.current().nextInt(0, tmpClientList.size());
+                out.writeObject(tmpClientList.get(randomNum));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
