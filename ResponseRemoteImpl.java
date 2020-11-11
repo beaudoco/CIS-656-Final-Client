@@ -25,6 +25,8 @@ public class ResponseRemoteImpl implements Response {
 
             if (response.toString().contains("/")) {
                 String hostIP = response.toString().split(":")[0];
+                hostIP = hostIP.split("/")[0];
+                System.out.println(hostIP);
                 Socket sock2 = new Socket(hostIP, 8080);
 
                 System.out.println("big ben");
