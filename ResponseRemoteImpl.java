@@ -62,6 +62,7 @@ public class ResponseRemoteImpl implements Response {
                 }
             }
         } catch (Exception e) {
+            System.out.println(e);
 
             throw new InternalError();
         }
