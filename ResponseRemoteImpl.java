@@ -25,7 +25,7 @@ public class ResponseRemoteImpl implements Response {
 
             if (response.toString().contains("/")) {
                 String hostIP = response.toString().split(":")[0];
-                hostIP = hostIP.split("/")[0];
+                hostIP = hostIP.split("/")[1];
 
                 System.out.println(hostIP);
 
