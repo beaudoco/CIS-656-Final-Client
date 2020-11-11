@@ -17,7 +17,7 @@ public class ResponseRemoteImpl implements Response {
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
             Object response = isr.readObject();
 
-            if (response.toString().contains("\\")) {
+            if (response.toString().contains("/")) {
                 System.out.println("big ben");
             }
 
