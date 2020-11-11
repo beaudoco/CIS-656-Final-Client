@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ResponseRemoteImpl implements Response {
-    public static final int PORT = 4444;
+    public static final int PORT = 4040;
 
     public void request(String server) {
         Socket sock;
