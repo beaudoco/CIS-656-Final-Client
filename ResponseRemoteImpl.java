@@ -67,6 +67,8 @@ public class ResponseRemoteImpl implements Response {
                 }
             }
 
+            System.out.println(response);
+
 
         } catch (Exception e) {
             System.out.println(e);
@@ -178,17 +180,13 @@ class ServerThread extends Thread {
                     String tmpString = stringRpcRequest.getString();
 
                     if ("request".equals(stringRpcRequest.getMethod())) {
-//                        if (tmpString.toLowerCase().equals("time")) {
-//                            request = response.timeString();
-//                        } else if (tmpString.isEmpty()) {
-////                            System.out.println(clientList.getClients().isEmpty());
-//                            clientList.removeClient(clientName);
-//                            hasValue = false;
-//                            sock.close();
-//                            System.out.println("Socket closed!");
-//                        } else {
-//                            request = response.capitalizeString(tmpString);
-//                        }
+                        if (tmpString.isEmpty()) {
+//                            System.out.println(clientList.getClients().isEmpty());
+                            clientList.removeClient(clientName);
+                            hasValue = false;
+                            sock.close();
+                            System.out.println("Socket closed!");
+                        }
                         request = tmpString;
 
                         if (hasValue) {
