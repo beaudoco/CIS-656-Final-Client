@@ -13,6 +13,7 @@ public class ResponseRemoteImpl implements Response {
 
     public void request(String server) {
         Socket sock;
+        Socket sock2;
         boolean hasValue = true;
 
         try {
@@ -29,43 +30,44 @@ public class ResponseRemoteImpl implements Response {
 
                 System.out.println(hostIP);
 
-                Socket sock2 = new Socket(hostIP, 8080);
+                sock2 = new Socket(hostIP, 8080);
 
-//                isr = new ObjectInputStream(sock.getInputStream());
-//                response = isr.readObject();
-            }
+                isr = new ObjectInputStream(sock2.getInputStream());
+                response = isr.readObject();
 
-//            System.out.println(response);
+                System.out.println(response);
 
+                while (hasValue) {
+                    System.out.println("Please give a string");
+                    Scanner in = new Scanner(System.in);
+                    String s = in.nextLine();
 
-            while (hasValue) {
-                System.out.println("Please give a string");
-                Scanner in = new Scanner(System.in);
-                String s = in.nextLine();
+                    hasValue = !s.isEmpty();
 
-                hasValue = !s.isEmpty();
+                    StringRpcRequest stringRpcRequest = generateServerRequest(s);
+                    ObjectOutputStream out = new ObjectOutputStream(sock2.getOutputStream());
+                    out.writeObject(stringRpcRequest);
+                    out.flush();
 
-                StringRpcRequest stringRpcRequest = generateServerRequest(s);
-                ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
-                out.writeObject(stringRpcRequest);
-                out.flush();
+                    if (hasValue) {
+                        isr = new ObjectInputStream(sock2.getInputStream());
+                        response = isr.readObject();
+                        if (response instanceof String) {
+                            System.out.println("Got this from the Server: " + response.toString());
 
-                if (hasValue) {
-                    isr = new ObjectInputStream(sock.getInputStream());
-                    response = isr.readObject();
-                    if (response instanceof String) {
-                        System.out.println("Got this from the Server: " + response.toString());
+                        } else {
+                            sock2.close();
+                            throw new InternalError();
 
+                        }
                     } else {
-                        sock.close();
-                        throw new InternalError();
-
+                        System.out.println("Ending Client");
+                        sock2.close();
                     }
-                } else {
-                    System.out.println("Ending Client");
-                    sock.close();
                 }
             }
+
+
         } catch (Exception e) {
             System.out.println(e);
 
