@@ -63,6 +63,7 @@ public class ResponseRemoteImpl implements Response {
                         }
                     } else {
                         System.out.println("Ending Client");
+                        sock.close();
                         sock2.close();
                         return;
                     }
