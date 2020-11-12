@@ -14,7 +14,8 @@ public class ResponseRemoteImpl implements Response {
     public void request(String server) {
         Socket sock;
         Socket sock2;
-        boolean hasValue = true;
+        boolean clientHasValue = true;
+        boolean serverHasValue = true;
 
         try {
             sock = new Socket(server, PORT);
@@ -37,19 +38,19 @@ public class ResponseRemoteImpl implements Response {
 
                 System.out.println(response);
 
-                while (hasValue) {
+                while (clientHasValue) {
                     System.out.println("Please give a string");
                     Scanner in = new Scanner(System.in);
                     String s = in.nextLine();
 
-                    hasValue = !s.isEmpty();
+                    clientHasValue = !s.isEmpty();
 
                     StringRpcRequest stringRpcRequest = generateServerRequest(s);
                     ObjectOutputStream out = new ObjectOutputStream(sock2.getOutputStream());
                     out.writeObject(stringRpcRequest);
                     out.flush();
 
-                    if (hasValue) {
+                    if (clientHasValue) {
                         isr = new ObjectInputStream(sock2.getInputStream());
                         response = isr.readObject();
                         if (response instanceof String) {
@@ -63,11 +64,42 @@ public class ResponseRemoteImpl implements Response {
                     } else {
                         System.out.println("Ending Client");
                         sock2.close();
+                        return;
                     }
                 }
             }
 
             System.out.println(response);
+
+            while (serverHasValue) {
+                System.out.println("Please give a string");
+                Scanner in = new Scanner(System.in);
+                String s = in.nextLine();
+
+                serverHasValue = !s.isEmpty();
+
+                StringRpcRequest stringRpcRequest = generateServerRequest(s);
+                ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
+                out.writeObject(stringRpcRequest);
+                out.flush();
+
+                if (serverHasValue) {
+                    isr = new ObjectInputStream(sock.getInputStream());
+                    response = isr.readObject();
+                    if (response instanceof String) {
+                        System.out.println("Got this from the Server: " + response.toString());
+
+                    } else {
+                        sock.close();
+                        throw new InternalError();
+
+                    }
+                } else {
+                    System.out.println("Ending Client");
+                    sock.close();
+                    return;
+                }
+            }
 
 
         } catch (Exception e) {
