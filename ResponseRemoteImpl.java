@@ -63,6 +63,9 @@ public class ResponseRemoteImpl implements Response {
                         }
                     } else {
                         System.out.println("Ending Client");
+                        out = new ObjectOutputStream(sock.getOutputStream());
+                        out.writeObject(stringRpcRequest);
+                        out.flush();
                         sock.close();
                         sock2.close();
                         return;
