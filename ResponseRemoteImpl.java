@@ -31,11 +31,11 @@ public class ResponseRemoteImpl implements Response {
 
                 Socket sock2 = new Socket(hostIP, 8080);
 
-                isr = new ObjectInputStream(sock.getInputStream());
-                response = isr.readObject();
+//                isr = new ObjectInputStream(sock.getInputStream());
+//                response = isr.readObject();
             }
 
-            System.out.println(response);
+//            System.out.println(response);
 
 
             while (hasValue) {
