@@ -131,7 +131,7 @@ public class ResponseRemoteImpl implements Response {
 
     @Override
     public String welcomeMessage() {
-        return ("Hello, you are the host client \r\n");
+        return ("Hello, you are in the club \r\n");
     }
 
     private StringRpcRequest generateServerRequest(String val) {
@@ -168,9 +168,9 @@ class ServerWait extends Thread {
                 e.printStackTrace();
             }
 
-            if (clientList.getClients().size() < 3) {
-                String clientName = sock.getRemoteSocketAddress().toString();
+            String clientName = sock.getRemoteSocketAddress().toString();
 
+            if (clientList.getClients().size() <= 3) {
                 clientList.addClient(clientName);
                 clientCount++;
 
@@ -178,7 +178,7 @@ class ServerWait extends Thread {
 
                 System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
             } else {
-
+                new ServerThread(sock, clientCount, clientList, clientName).start();
             }
         }
     }
@@ -208,7 +208,7 @@ class ServerThread extends Thread {
         }
 
         try {
-            if (clientList.getClients().size() == 1) {
+            if (clientList.getClients().size() <= 1) {
                 out.writeObject(response.welcomeMessage());
                 out.flush();
             } else {
