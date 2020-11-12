@@ -13,28 +13,43 @@ public class ResponseRemoteImpl implements Response {
 
     public void request(String server) {
         Socket sock;
-        Socket sock2;
+        Socket sock2 = null;
         boolean clientHasValue = true;
         boolean serverHasValue = true;
+        ClientList clientList = new ClientList();
 
         try {
             sock = new Socket(server, PORT);
 //            sock = new Socket("localhost", PORT);
-            new ServerWait().start();
+            new ServerWait(clientList).start();
 
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
             Object response = isr.readObject();
 
             if (response.toString().contains("/")) {
-                String hostIP = response.toString().split(":")[0];
-                hostIP = hostIP.split("/")[1];
+                String hostIP = response.toString();
 
-                System.out.println(hostIP);
+                while(hostIP.contains("/")) {
+                    String tmpHostIP = hostIP.split(":")[0];
+                    tmpHostIP = tmpHostIP.split("/")[1];
 
-                sock2 = new Socket(hostIP, 8080);
+                    System.out.println(tmpHostIP);
 
-                isr = new ObjectInputStream(sock2.getInputStream());
-                response = isr.readObject();
+                    sock2 = new Socket(tmpHostIP, 8080);
+                    isr = new ObjectInputStream(sock2.getInputStream());
+                    response = isr.readObject();
+
+                    if (response.toString().contains("/")) {
+                        StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
+                        ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
+                        tmpOut.writeObject(tmpStringRpcRequest);
+                        tmpOut.flush();
+                        sock2.close();
+                    } else {
+                        clientList.addClient(hostIP);
+                    }
+                    hostIP = response.toString();
+                }
 
                 System.out.println(response);
 
@@ -68,7 +83,8 @@ public class ResponseRemoteImpl implements Response {
                         out.flush();
                         sock.close();
                         sock2.close();
-                        return;
+                        System.exit(0);
+//                        return;
                     }
                 }
             }
@@ -127,16 +143,17 @@ public class ResponseRemoteImpl implements Response {
 }
 
 class ServerWait extends Thread {
+    ClientList clientList;
     static int clientCount = 0;
-    public ServerWait() {
-
+    public ServerWait(ClientList clientList) {
+        this.clientList = clientList;
     }
 
     public void run() {
         int maxPendingConn = 10;
         final int port = 8080;
         ServerSocket servsock = null;
-        ClientList clientList = new ClientList();
+        //ClientList clientList = new ClientList();
         try {
             servsock = new ServerSocket(port, maxPendingConn);
         } catch (IOException e) {
@@ -151,18 +168,21 @@ class ServerWait extends Thread {
                 e.printStackTrace();
             }
 
-            String clientName = sock.getRemoteSocketAddress().toString();
+            if (clientList.getClients().size() < 3) {
+                String clientName = sock.getRemoteSocketAddress().toString();
 
-            clientList.addClient(clientName);
-            clientCount++;
+                clientList.addClient(clientName);
+                clientCount++;
 
-            new ServerThread(sock, clientCount, clientList, clientName).start();
+                new ServerThread(sock, clientCount, clientList, clientName).start();
 
-            System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
+                System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
+            } else {
+
+            }
         }
     }
 }
-
 
 class ServerThread extends Thread {
     protected Socket sock;
