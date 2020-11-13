@@ -50,7 +50,7 @@ public class ResponseRemoteImpl implements Response {
                     }
                     hostIP = response.toString();
                 }
-
+                System.out.println("host: " + hostIP);
                 System.out.println(response);
 
                 while (clientHasValue) {
