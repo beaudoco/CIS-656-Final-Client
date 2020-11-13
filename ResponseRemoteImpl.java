@@ -1,10 +1,8 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -35,7 +33,7 @@ public class ResponseRemoteImpl implements Response {
                     String tmpHostIP = hostIP.split(":")[0];
                     tmpHostIP = tmpHostIP.split("/")[1];
 
-                    System.out.println(tmpHostIP);
+                    System.out.println("tmp: " + tmpHostIP);
 
                     sock2 = new Socket(tmpHostIP, 8080);
                     isr = new ObjectInputStream(sock2.getInputStream());
@@ -138,12 +136,7 @@ public class ResponseRemoteImpl implements Response {
 
     @Override
     public String welcomeMessage() {
-        try {
-            return (InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return "failed \r \n";
+        return ("Hello, you are in the club \r\n");
     }
 
     private StringRpcRequest generateServerRequest(String val) {
