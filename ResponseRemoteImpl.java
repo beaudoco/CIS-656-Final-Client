@@ -1,8 +1,10 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -136,7 +138,12 @@ public class ResponseRemoteImpl implements Response {
 
     @Override
     public String welcomeMessage() {
-        return ("Hello, you are in the club \r\n");
+        try {
+            return (InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return "failed \r \n";
     }
 
     private StringRpcRequest generateServerRequest(String val) {
@@ -215,7 +222,6 @@ class ServerThread extends Thread {
         try {
             if (clientList.getClients().size() <= 1) {
                 out.writeObject(response.welcomeMessage());
-                clientList.addClient(clientName);
                 out.flush();
             } else {
                 List<String> tmpClientList = new ArrayList<>();
