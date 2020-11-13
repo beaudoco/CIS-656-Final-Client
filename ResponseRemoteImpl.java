@@ -109,6 +109,10 @@ public class ResponseRemoteImpl implements Response {
                     if (response instanceof String) {
                         System.out.println("Got this from the Server: " + response.toString());
 
+                        for(int i = 0; i < clientList.getClients().size(); i++) {
+                            System.out.println(clientList.getClients().get(i));
+                        }
+
                     } else {
                         sock.close();
                         throw new InternalError();
@@ -117,7 +121,8 @@ public class ResponseRemoteImpl implements Response {
                 } else {
                     System.out.println("Ending Client");
                     sock.close();
-                    return;
+                    System.exit(0);
+//                    return;
                 }
             }
 
