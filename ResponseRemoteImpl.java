@@ -183,6 +183,7 @@ class ServerWait extends Thread {
 
                 System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
             } else {
+                clientList.addClient(clientName);
                 new ServerThread(sock, clientCount, clientList, clientName).start();
             }
         }
