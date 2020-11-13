@@ -183,7 +183,6 @@ class ServerWait extends Thread {
 
                 System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
             } else {
-                clientList.addClient(clientName);
                 new ServerThread(sock, clientCount, clientList, clientName).start();
             }
         }
@@ -216,6 +215,7 @@ class ServerThread extends Thread {
         try {
             if (clientList.getClients().size() <= 1) {
                 out.writeObject(response.welcomeMessage());
+                clientList.addClient(clientName);
                 out.flush();
             } else {
                 List<String> tmpClientList = new ArrayList<>();
