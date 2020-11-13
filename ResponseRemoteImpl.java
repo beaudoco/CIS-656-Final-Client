@@ -139,7 +139,7 @@ public class ResponseRemoteImpl implements Response {
     @Override
     public String welcomeMessage() {
         try {
-            return (InetAddress.getLocalHost().getHostName());
+            return (InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
