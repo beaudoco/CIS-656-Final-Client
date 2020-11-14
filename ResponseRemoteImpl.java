@@ -100,7 +100,7 @@ public class ResponseRemoteImpl implements Response {
                 Scanner in = new Scanner(System.in);
                 String s = in.nextLine();
 
-                hasValue = !s.isEmpty();
+                hasValue = !s.equals("quit");
 
                 StringRpcRequest stringRpcRequest = generateServerRequest(s);
                 ObjectOutputStream out; // = new ObjectOutputStream(sock.getOutputStream());
@@ -119,6 +119,7 @@ public class ResponseRemoteImpl implements Response {
 
                     } else {
                         System.out.println("Ending Client");
+                        stringRpcRequest = generateServerRequest(s);
 
                         if (hostList.getClients().size() > 0) {
                             out = new ObjectOutputStream(sock.getOutputStream());
@@ -141,6 +142,7 @@ public class ResponseRemoteImpl implements Response {
                     }
                 } else {
                     System.out.println("Ending Client");
+                    stringRpcRequest = generateServerRequest(s);
                     if (hostList.getClients().size() > 0) {
                         out = new ObjectOutputStream(sock.getOutputStream());
                         out.writeObject(stringRpcRequest);
@@ -260,7 +262,7 @@ class ClientListen extends Thread {
                     String tmpString = stringRpcRequest.getString();
 
                     if ("request".equals(stringRpcRequest.getMethod())) {
-                        if (tmpString.isEmpty()) {
+                        if (tmpString.equals("quit")) {
                             hasValue = false;
                             sock.close();
                             clientList.removeClient(clientName);
@@ -331,7 +333,7 @@ class ServerThread extends Thread {
                     String tmpString = stringRpcRequest.getString();
 
                     if ("request".equals(stringRpcRequest.getMethod())) {
-                        if (tmpString.isEmpty()) {
+                        if (tmpString.equals("quit")) {
                             clientList.removeClient(clientName);
                             hasValue = false;
                             sock.close();
