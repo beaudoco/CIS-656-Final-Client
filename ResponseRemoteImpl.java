@@ -184,6 +184,7 @@ public class ResponseRemoteImpl implements Response {
 
                         if (!clientHost.isEmpty()) {
                             out = new ObjectOutputStream(sock2.getOutputStream());
+                            stringRpcRequest = generateServerRequest(s);
                             out.writeObject(stringRpcRequest);
                             out.flush();
                             sock2.close();
@@ -309,8 +310,11 @@ class ServerThread extends Thread {
         while(hasValue) {
             String request = null;
             try {
+                System.out.println("Fail 1");
                 ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
+                System.out.println("Fail 2");
                 Object object = isr.readObject();
+                System.out.println("Fail 3");
 
                 if (object instanceof  StringRpcRequest) {
                     StringRpcRequest stringRpcRequest = (StringRpcRequest) object;
