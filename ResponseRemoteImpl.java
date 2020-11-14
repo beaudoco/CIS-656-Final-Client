@@ -26,7 +26,7 @@ public class ResponseRemoteImpl implements Response {
             sock = new Socket(server, PORT);
             hostName = sock.getRemoteSocketAddress().toString();
             hostList.addClient(hostName);
-            new ClientListen(sock, hostList, hostName);
+            new ClientListen(sock, hostList, hostName).start();
 
             // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
@@ -118,6 +118,7 @@ public class ResponseRemoteImpl implements Response {
 
                     } else {
                         System.out.println("Ending Client");
+
                         if (hostList.getClients().size() > 0) {
                             out = new ObjectOutputStream(sock.getOutputStream());
                             out.writeObject(stringRpcRequest);
