@@ -182,10 +182,12 @@ public class ResponseRemoteImpl implements Response {
                         out.flush();
                         sock.close();
 
-                        out = new ObjectOutputStream(sock2.getOutputStream());
-                        out.writeObject(stringRpcRequest);
-                        out.flush();
-                        sock2.close();
+                        if (!clientHost.isEmpty()) {
+                            out = new ObjectOutputStream(sock2.getOutputStream());
+                            out.writeObject(stringRpcRequest);
+                            out.flush();
+                            sock2.close();
+                        }
 //                        System.exit(0);
                         throw new InternalError();
 
@@ -336,8 +338,8 @@ class ServerThread extends Thread {
                     System.out.println("error!");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("error!");
+                //e.printStackTrace();
+                System.out.println(e);
             }
         }
     }
