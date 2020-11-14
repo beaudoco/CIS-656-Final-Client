@@ -24,13 +24,14 @@ public class ResponseRemoteImpl implements Response {
         try {
             // CONNECT TO SERVER
             sock = new Socket(server, PORT);
-            hostName = sock.getRemoteSocketAddress().toString();
-            hostList.addClient(hostName);
-            new ClientListen(sock, hostList, hostName).start();
 
             // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
             Object response = isr.readObject();
+
+            hostName = sock.getRemoteSocketAddress().toString();
+            hostList.addClient(hostName);
+            new ClientListen(sock, hostList, hostName).start();
 
             // THIS IS IF THERE IS ALREADY A CLIENT HOST
             if (response.toString().contains("/")) {
