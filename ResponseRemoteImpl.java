@@ -120,7 +120,6 @@ public class ResponseRemoteImpl implements Response {
                     } else {
                         System.out.println("Ending Client");
                         stringRpcRequest = generateServerRequest(s);
-                        System.out.println("here");
                         if (hostList.getClients().size() > 0) {
                             out = new ObjectOutputStream(sock.getOutputStream());
                             out.writeObject(stringRpcRequest);
@@ -142,7 +141,7 @@ public class ResponseRemoteImpl implements Response {
                     }
                 } else {
                     System.out.println("Ending Client");
-                    System.out.println("there");
+                    System.out.println(hostList.getClients().size());
                     stringRpcRequest = generateServerRequest(s);
                     if (hostList.getClients().size() > 0) {
                         out = new ObjectOutputStream(sock.getOutputStream());
