@@ -14,8 +14,7 @@ public class ResponseRemoteImpl implements Response {
     public void request(String server) {
         Socket sock;
         Socket sock2 = null;
-        boolean clientHasValue = true;
-        boolean serverHasValue = true;
+        boolean hasValue = true;
         ClientList clientList = new ClientList();
         String clientHost = "";
 
@@ -154,19 +153,19 @@ public class ResponseRemoteImpl implements Response {
             System.out.println(response);
 
             // THIS IS COMMUNICATION BETWEEN THE MAIN SERVER AND THE CLIENT
-            while (serverHasValue) {
+            while (hasValue) {
                 System.out.println("Please give a string");
                 Scanner in = new Scanner(System.in);
                 String s = in.nextLine();
 
-                serverHasValue = !s.isEmpty();
+                hasValue = !s.isEmpty();
 
                 StringRpcRequest stringRpcRequest = generateServerRequest(s);
                 ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
                 out.writeObject(stringRpcRequest);
                 out.flush();
 
-                if (serverHasValue) {
+                if (hasValue) {
                     isr = new ObjectInputStream(sock.getInputStream());
                     response = isr.readObject();
                     if (response instanceof String) {
@@ -177,7 +176,17 @@ public class ResponseRemoteImpl implements Response {
                         }
 
                     } else {
+                        System.out.println("Ending Client");
+                        out = new ObjectOutputStream(sock.getOutputStream());
+                        out.writeObject(stringRpcRequest);
+                        out.flush();
                         sock.close();
+
+                        out = new ObjectOutputStream(sock2.getOutputStream());
+                        out.writeObject(stringRpcRequest);
+                        out.flush();
+                        sock2.close();
+//                        System.exit(0);
                         throw new InternalError();
 
                     }
