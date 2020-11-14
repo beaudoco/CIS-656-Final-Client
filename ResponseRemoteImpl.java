@@ -45,7 +45,35 @@ public class ResponseRemoteImpl implements Response {
                 //CHECK RESPONSE
                 response = isr.readObject();
 
+                // HERE WE ARE CHECKING WHAT THE CLIENT HAS SAID BACK TO US
                 System.out.println(response.toString());
+
+                // THE CLIENT WE WERE TOLD TO GO TO HAS TOO MANY NEIGHBORS
+                // CONNECT TO THE NEIGHBOR THEY GAVE US
+                while (response.toString().contains("/")) {
+                    // CLOSE CONNECTION TO PREVIOUSLY SUGGESTED CLIENT
+                    // TELL ORIGINAL HOST CLIENT FORGET ME
+                    StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
+                    ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
+                    tmpOut.writeObject(tmpStringRpcRequest);
+                    tmpOut.flush();
+                    sock2.close();
+
+                    // THIS IS THE NEWLY SUGGESTED CLIENT TO CONNECT TO
+                    clientHost = response.toString();
+                    tmpHostIP = clientHost.split(":")[0];
+                    tmpHostIP = tmpHostIP.split("/")[1];
+
+                    //CONNECT TO NEW CLIENT HOST
+                    sock2 = new Socket(tmpHostIP, 8080);
+                    isr = new ObjectInputStream(sock2.getInputStream());
+
+                    //CHECK RESPONSE
+                    response = isr.readObject();
+
+                    // HERE WE ARE CHECKING WHAT THE CLIENT HAS SAID BACK TO US
+                    System.out.println(response.toString());
+                }
             }
 //            if (response.toString().contains("/")) {
 //                String hostIP = response.toString();
