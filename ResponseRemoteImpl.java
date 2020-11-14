@@ -23,7 +23,7 @@ public class ResponseRemoteImpl implements Response {
             sock = new Socket(server, PORT);
 
             // OPEN CLIENT AS SERVER
-            new ServerWait(clientList).start();
+            new ServerWait(new ClientList()).start();
 
             // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
@@ -72,7 +72,7 @@ public class ResponseRemoteImpl implements Response {
                     response = isr.readObject();
 
                     // HERE WE ARE CHECKING WHAT THE CLIENT HAS SAID BACK TO US
-                    System.out.println(response.toString());
+                    //System.out.println(response.toString());
                 }
 
                 // WE HAVE SUCCESSFULLY CONNECTED TO A CLIENT HOST, ADD THEM AS A NEIGHBOR
