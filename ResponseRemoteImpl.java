@@ -111,7 +111,7 @@ public class ResponseRemoteImpl implements Response {
 //                    isr = new ObjectInputStream(sock.getInputStream());
 //                    response = isr.readObject();
                     if (response instanceof String) {
-                        System.out.println("Result for: " + response.toString());
+                        //System.out.println("Result for: " + response.toString());
 
                         for(int i = 0; i < clientList.getClients().size(); i++) {
                             System.out.println(clientList.getClients().get(i));
@@ -158,7 +158,6 @@ public class ResponseRemoteImpl implements Response {
                         sock2.close();
                     }
 
-                    System.out.println(sockList.size());
                     for (int i = 0; i < sockList.size(); i++) {
                         if (clientList.getClients().contains(sockList.get(i).getRemoteSocketAddress().toString())) {
                             out = new ObjectOutputStream(sockList.get(i).getOutputStream());
@@ -175,7 +174,7 @@ public class ResponseRemoteImpl implements Response {
 
 
         } catch (Exception e) {
-            System.out.println(e);
+            //System.out.println(e);
             throw new InternalError();
         }
     }
