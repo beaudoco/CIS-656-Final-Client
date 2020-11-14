@@ -105,7 +105,7 @@ public class ResponseRemoteImpl implements Response {
                     isr = new ObjectInputStream(sock.getInputStream());
                     response = isr.readObject();
                     if (response instanceof String) {
-                        System.out.println("Got this from the Server: " + response.toString());
+                        System.out.println("Result for: " + response.toString());
 
                         for(int i = 0; i < clientList.getClients().size(); i++) {
                             System.out.println(clientList.getClients().get(i));
@@ -137,7 +137,7 @@ public class ResponseRemoteImpl implements Response {
                     out.flush();
                     sock.close();
 
-                    if (!clientHost.isEmpty()) {
+                    if (!clientHost.isEmpty() && clientList.getClients().contains(clientHost)) {
                         out = new ObjectOutputStream(sock2.getOutputStream());
                         stringRpcRequest = generateServerRequest(s);
                         out.writeObject(stringRpcRequest);
