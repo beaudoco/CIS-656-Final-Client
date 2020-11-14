@@ -17,13 +17,11 @@ public class ResponseRemoteImpl implements Response {
         boolean clientHasValue = true;
         boolean serverHasValue = true;
         ClientList clientList = new ClientList();
+        String clientHost = "";
 
         try {
             // CONNECT TO SERVER
             sock = new Socket(server, PORT);
-
-            // OPEN CLIENT AS SERVER
-            new ServerWait(new ClientList()).start();
 
             // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
@@ -32,7 +30,7 @@ public class ResponseRemoteImpl implements Response {
             // THIS IS IF THERE IS ALREADY A CLIENT HOST
             if (response.toString().contains("/")) {
                 // THIS IS THE CLIENT THE SERVER SUGGESTED TO CONNECT TO
-                String clientHost = response.toString();
+                clientHost = response.toString();
 
                 // SPLIT IP ADDRESS TO CONNECT TO CLIENT HOST
                 String tmpHostIP = clientHost.split(":")[0];
@@ -149,6 +147,10 @@ public class ResponseRemoteImpl implements Response {
 //            }
 
             // WE ARE CHECKING THE RESULTS
+
+            // OPEN CLIENT AS SERVER
+            new ServerWait(clientList).start();
+
             System.out.println(response);
 
             // THIS IS COMMUNICATION BETWEEN THE MAIN SERVER AND THE CLIENT
@@ -277,7 +279,7 @@ class ServerThread extends Thread {
         }
 
         try {
-            if (clientList.getClients().size() <= 1) {
+            if (clientList.getClients().size() <= 2) {
                 out.writeObject(response.welcomeMessage());
                 out.flush();
             } else {
