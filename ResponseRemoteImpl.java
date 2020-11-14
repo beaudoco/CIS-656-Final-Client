@@ -74,6 +74,14 @@ public class ResponseRemoteImpl implements Response {
                     // HERE WE ARE CHECKING WHAT THE CLIENT HAS SAID BACK TO US
                     System.out.println(response.toString());
                 }
+
+                // WE HAVE SUCCESSFULLY CONNECTED TO A CLIENT HOST, ADD THEM AS A NEIGHBOR
+                clientList.addClient(clientHost);
+
+                // SHOW THE LIST
+                for (int i = 0; i < clientList.getClients().size(); i++) {
+                    System.out.println(clientList.getClients().get(i));
+                }
             }
 //            if (response.toString().contains("/")) {
 //                String hostIP = response.toString();
