@@ -16,6 +16,7 @@ public class ResponseRemoteImpl implements Response {
         Socket sock2 = null;
         boolean hasValue = true;
         ClientList clientList = new ClientList();
+        List<Socket> sockList = new ArrayList<>();
         String clientHost = "";
 
         try {
@@ -54,7 +55,6 @@ public class ResponseRemoteImpl implements Response {
                     ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
                     tmpOut.writeObject(tmpStringRpcRequest);
                     tmpOut.flush();
-                    System.out.println("heck");
                     sock2.close();
 
                     // THIS IS THE NEWLY SUGGESTED CLIENT TO CONNECT TO
@@ -64,7 +64,6 @@ public class ResponseRemoteImpl implements Response {
 
                     //CONNECT TO NEW CLIENT HOST
                     sock2 = new Socket(tmpHostIP, 8080);
-                    System.out.println("lit");
                     isr = new ObjectInputStream(sock2.getInputStream());
 
                     //CHECK RESPONSE
@@ -74,6 +73,7 @@ public class ResponseRemoteImpl implements Response {
                     //System.out.println(response.toString());
                 }
 
+                new ClientListen(sock2, clientList, clientHost).start();
                 // WE HAVE SUCCESSFULLY CONNECTED TO A CLIENT HOST, ADD THEM AS A NEIGHBOR
                 clientList.addClient(clientHost);
 
@@ -84,7 +84,7 @@ public class ResponseRemoteImpl implements Response {
             }
 
             // OPEN CLIENT AS SERVER
-            new ServerWait(clientList).start();
+            new ServerWait(clientList, sockList).start();
 
             System.out.println(response);
 
@@ -144,6 +144,14 @@ public class ResponseRemoteImpl implements Response {
                         out.flush();
                         sock2.close();
                     }
+
+                    for (int i = 0; i < sockList.size(); i++) {
+                        out = new ObjectOutputStream(sockList.get(i).getOutputStream());
+                        stringRpcRequest = generateServerRequest(s);
+                        out.writeObject(stringRpcRequest);
+                        out.flush();
+                        sockList.get(i).close();
+                    }
                     System.exit(0);
                 }
             }
@@ -173,9 +181,11 @@ public class ResponseRemoteImpl implements Response {
 // SETTING UP CLIENT AS SERVER
 class ServerWait extends Thread {
     ClientList clientList;
+    List<Socket> sockList;
     static int clientCount = 0;
-    public ServerWait(ClientList clientList) {
+    public ServerWait(ClientList clientList, List<Socket> sockList) {
         this.clientList = clientList;
+        this.sockList = sockList;
     }
 
     public void run() {
@@ -204,10 +214,53 @@ class ServerWait extends Thread {
                 clientCount++;
 
                 new ServerThread(sock, clientCount, clientList, clientName).start();
+                sockList.add(sock);
 
                 System.out.println(clientList.getClients().get(0) + " size: " + clientList.getClients().size());
             } else {
                 new ServerThread(sock, clientCount, clientList, clientName).start();
+            }
+        }
+    }
+}
+
+// SETTING UP CLIENT AS SERVER
+class ClientListen extends Thread {
+    Socket sock;
+    ClientList clientList;
+    String clientName;
+    public ClientListen(Socket sock, ClientList clientList, String clientName) {
+        this.sock = sock;
+        this.clientList = clientList;
+        this.clientName = clientName;
+    }
+
+    public void run() {
+        boolean hasValue = true;
+        while (hasValue) {
+            try {
+                ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
+                Object object = isr.readObject();
+
+                if (object instanceof  StringRpcRequest) {
+                    StringRpcRequest stringRpcRequest = (StringRpcRequest) object;
+
+                    String tmpString = stringRpcRequest.getString();
+
+                    if ("request".equals(stringRpcRequest.getMethod())) {
+                        if (tmpString.isEmpty()) {
+                            hasValue = false;
+                            sock.close();
+                            clientList.removeClient(clientName);
+                            System.out.println("Socket closed!");
+                        }
+                    }
+
+                } else {
+                    System.out.println("error!");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
