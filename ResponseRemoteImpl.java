@@ -312,6 +312,7 @@ class ServerThread extends Thread {
             String request = null;
             try {
                 System.out.println("Fail 1");
+                System.out.println(sock.getInputStream().toString());
                 ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
                 System.out.println("Fail 2");
                 Object object = isr.readObject();
