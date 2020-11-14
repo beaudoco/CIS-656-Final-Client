@@ -185,6 +185,7 @@ public class ResponseRemoteImpl implements Response {
                         if (!clientHost.isEmpty()) {
                             out = new ObjectOutputStream(sock2.getOutputStream());
                             stringRpcRequest = generateServerRequest(s);
+                            System.out.println(stringRpcRequest.toString());
                             out.writeObject(stringRpcRequest);
                             out.flush();
                             sock2.close();
