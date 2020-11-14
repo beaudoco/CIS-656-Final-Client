@@ -141,7 +141,7 @@ public class ResponseRemoteImpl implements Response {
                     }
                 } else {
                     System.out.println("Ending Client");
-                    System.out.println(hostList.getClients().size());
+
                     stringRpcRequest = generateServerRequest(s);
                     if (hostList.getClients().size() > 0) {
                         out = new ObjectOutputStream(sock.getOutputStream());
@@ -150,6 +150,7 @@ public class ResponseRemoteImpl implements Response {
                         sock.close();
                     }
 
+                    System.out.println(clientList.getClients().size());
                     if (!clientHost.isEmpty() && clientList.getClients().contains(clientHost)) {
                         out = new ObjectOutputStream(sock2.getOutputStream());
                         stringRpcRequest = generateServerRequest(s);
@@ -159,6 +160,7 @@ public class ResponseRemoteImpl implements Response {
                     }
 
                     for (int i = 0; i < sockList.size(); i++) {
+                        //clientList.getClients().contains(sockList.get(i).getRemoteSocketAddress().toString())
                         out = new ObjectOutputStream(sockList.get(i).getOutputStream());
                         stringRpcRequest = generateServerRequest(s);
                         out.writeObject(stringRpcRequest);
