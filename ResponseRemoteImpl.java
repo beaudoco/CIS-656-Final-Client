@@ -151,6 +151,7 @@ public class ResponseRemoteImpl implements Response {
                         out.writeObject(stringRpcRequest);
                         out.flush();
                         sockList.get(i).close();
+                        sockList.remove(sockList.get(i));
                     }
                     System.exit(0);
                 }
