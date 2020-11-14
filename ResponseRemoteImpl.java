@@ -31,69 +31,86 @@ public class ResponseRemoteImpl implements Response {
 
             // THIS IS IF THERE IS ALREADY A CLIENT HOST
             if (response.toString().contains("/")) {
-                String hostIP = response.toString();
+                // THIS IS THE CLIENT THE SERVER SUGGESTED TO CONNECT TO
+                String clientHost = response.toString();
 
-                while(hostIP.contains("/")) {
-                    String tmpHostIP = hostIP.split(":")[0];
-                    tmpHostIP = tmpHostIP.split("/")[1];
+                // SPLIT IP ADDRESS TO CONNECT TO CLIENT HOST
+                String tmpHostIP = clientHost.split(":")[0];
+                tmpHostIP = tmpHostIP.split("/")[1];
 
-                    System.out.println("tmp: " + tmpHostIP);
+                //CONNECT TO CLIENT HOST
+                sock2 = new Socket(tmpHostIP, 8080);
+                isr = new ObjectInputStream(sock2.getInputStream());
 
-                    sock2 = new Socket(tmpHostIP, 8080);
-                    isr = new ObjectInputStream(sock2.getInputStream());
-                    response = isr.readObject();
-                    System.out.println("tmp response: " + tmpHostIP);
-                    if (response.toString().contains("/")) {
-                        System.out.println("tmp response bad: " + response.toString());
-                        StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
-                        ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
-                        tmpOut.writeObject(tmpStringRpcRequest);
-                        tmpOut.flush();
-                        sock2.close();
-                    } else {
-                        System.out.println("tmp response good: " + hostIP);
-                        clientList.addClient(hostIP);
-                    }
-                    hostIP = response.toString();
-                }
-                //clientList.addClient(hostIP);
-                System.out.println(response);
+                //CHECK RESPONSE
+                response = isr.readObject();
 
-                while (clientHasValue) {
-                    System.out.println("Please give a string");
-                    Scanner in = new Scanner(System.in);
-                    String s = in.nextLine();
-
-                    clientHasValue = !s.isEmpty();
-
-                    StringRpcRequest stringRpcRequest = generateServerRequest(s);
-                    ObjectOutputStream out = new ObjectOutputStream(sock2.getOutputStream());
-                    out.writeObject(stringRpcRequest);
-                    out.flush();
-
-                    if (clientHasValue) {
-                        isr = new ObjectInputStream(sock2.getInputStream());
-                        response = isr.readObject();
-                        if (response instanceof String) {
-                            System.out.println("Got this from the Server: " + response.toString());
-
-                        } else {
-                            sock2.close();
-                            throw new InternalError();
-
-                        }
-                    } else {
-                        System.out.println("Ending Client");
-                        out = new ObjectOutputStream(sock.getOutputStream());
-                        out.writeObject(stringRpcRequest);
-                        out.flush();
-                        sock.close();
-                        sock2.close();
-                        System.exit(0);
-//                        return;
-                    }
-                }
+                System.out.println(response.toString());
             }
+//            if (response.toString().contains("/")) {
+//                String hostIP = response.toString();
+//
+//                while(hostIP.contains("/")) {
+//                    String tmpHostIP = hostIP.split(":")[0];
+//                    tmpHostIP = tmpHostIP.split("/")[1];
+//
+//                    System.out.println("tmp: " + tmpHostIP);
+//
+//                    sock2 = new Socket(tmpHostIP, 8080);
+//                    isr = new ObjectInputStream(sock2.getInputStream());
+//                    response = isr.readObject();
+//                    System.out.println("tmp response: " + tmpHostIP);
+//                    if (response.toString().contains("/")) {
+//                        System.out.println("tmp response bad: " + response.toString());
+//                        StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
+//                        ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
+//                        tmpOut.writeObject(tmpStringRpcRequest);
+//                        tmpOut.flush();
+//                        sock2.close();
+//                    } else {
+//                        System.out.println("tmp response good: " + hostIP);
+//                        clientList.addClient(hostIP);
+//                    }
+//                    hostIP = response.toString();
+//                }
+//                //clientList.addClient(hostIP);
+//                System.out.println(response);
+//
+//                while (clientHasValue) {
+//                    System.out.println("Please give a string");
+//                    Scanner in = new Scanner(System.in);
+//                    String s = in.nextLine();
+//
+//                    clientHasValue = !s.isEmpty();
+//
+//                    StringRpcRequest stringRpcRequest = generateServerRequest(s);
+//                    ObjectOutputStream out = new ObjectOutputStream(sock2.getOutputStream());
+//                    out.writeObject(stringRpcRequest);
+//                    out.flush();
+//
+//                    if (clientHasValue) {
+//                        isr = new ObjectInputStream(sock2.getInputStream());
+//                        response = isr.readObject();
+//                        if (response instanceof String) {
+//                            System.out.println("Got this from the Server: " + response.toString());
+//
+//                        } else {
+//                            sock2.close();
+//                            throw new InternalError();
+//
+//                        }
+//                    } else {
+//                        System.out.println("Ending Client");
+//                        out = new ObjectOutputStream(sock.getOutputStream());
+//                        out.writeObject(stringRpcRequest);
+//                        out.flush();
+//                        sock.close();
+//                        sock2.close();
+//                        System.exit(0);
+////                        return;
+//                    }
+//                }
+//            }
 
             // WE ARE CHECKING THE RESULTS
             System.out.println(response);
