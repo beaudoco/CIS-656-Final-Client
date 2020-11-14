@@ -160,13 +160,14 @@ public class ResponseRemoteImpl implements Response {
 
                     System.out.println(sockList.size());
                     for (int i = 0; i < sockList.size(); i++) {
-                        //clientList.getClients().contains(sockList.get(i).getRemoteSocketAddress().toString())
-                        out = new ObjectOutputStream(sockList.get(i).getOutputStream());
-                        stringRpcRequest = generateServerRequest(s);
-                        out.writeObject(stringRpcRequest);
-                        out.flush();
-                        sockList.get(i).close();
-                        sockList.remove(sockList.get(i));
+                        if (clientList.getClients().contains(sockList.get(i).getRemoteSocketAddress().toString())) {
+                            out = new ObjectOutputStream(sockList.get(i).getOutputStream());
+                            stringRpcRequest = generateServerRequest(s);
+                            out.writeObject(stringRpcRequest);
+                            out.flush();
+                            sockList.get(i).close();
+                            sockList.remove(sockList.get(i));
+                        }
                     }
                     System.exit(0);
                 }
