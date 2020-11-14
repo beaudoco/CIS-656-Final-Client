@@ -16,12 +16,17 @@ public class ResponseRemoteImpl implements Response {
         Socket sock2 = null;
         boolean hasValue = true;
         ClientList clientList = new ClientList();
+        ClientList hostList = new ClientList();
         List<Socket> sockList = new ArrayList<>();
         String clientHost = "";
+        String hostName = "";
 
         try {
             // CONNECT TO SERVER
             sock = new Socket(server, PORT);
+            hostName = sock.getRemoteSocketAddress().toString();
+            hostList.addClient(hostName);
+            new ClientListen(sock, hostList, hostName);
 
             // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
@@ -97,13 +102,13 @@ public class ResponseRemoteImpl implements Response {
                 hasValue = !s.isEmpty();
 
                 StringRpcRequest stringRpcRequest = generateServerRequest(s);
-                ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
-                out.writeObject(stringRpcRequest);
-                out.flush();
+                ObjectOutputStream out; // = new ObjectOutputStream(sock.getOutputStream());
+//                out.writeObject(stringRpcRequest);
+//                out.flush();
 
                 if (hasValue) {
-                    isr = new ObjectInputStream(sock.getInputStream());
-                    response = isr.readObject();
+//                    isr = new ObjectInputStream(sock.getInputStream());
+//                    response = isr.readObject();
                     if (response instanceof String) {
                         System.out.println("Result for: " + response.toString());
 
@@ -113,10 +118,12 @@ public class ResponseRemoteImpl implements Response {
 
                     } else {
                         System.out.println("Ending Client");
-                        out = new ObjectOutputStream(sock.getOutputStream());
-                        out.writeObject(stringRpcRequest);
-                        out.flush();
-                        sock.close();
+                        if (hostList.getClients().size() > 0) {
+                            out = new ObjectOutputStream(sock.getOutputStream());
+                            out.writeObject(stringRpcRequest);
+                            out.flush();
+                            sock.close();
+                        }
 
                         if (!clientHost.isEmpty()) {
                             out = new ObjectOutputStream(sock2.getOutputStream());
@@ -132,10 +139,12 @@ public class ResponseRemoteImpl implements Response {
                     }
                 } else {
                     System.out.println("Ending Client");
-                    out = new ObjectOutputStream(sock.getOutputStream());
-                    out.writeObject(stringRpcRequest);
-                    out.flush();
-                    sock.close();
+                    if (hostList.getClients().size() > 0) {
+                        out = new ObjectOutputStream(sock.getOutputStream());
+                        out.writeObject(stringRpcRequest);
+                        out.flush();
+                        sock.close();
+                    }
 
                     if (!clientHost.isEmpty() && clientList.getClients().contains(clientHost)) {
                         out = new ObjectOutputStream(sock2.getOutputStream());
