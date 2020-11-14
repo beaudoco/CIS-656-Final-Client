@@ -82,72 +82,6 @@ public class ResponseRemoteImpl implements Response {
                     System.out.println(clientList.getClients().get(i));
                 }
             }
-//            if (response.toString().contains("/")) {
-//                String hostIP = response.toString();
-//
-//                while(hostIP.contains("/")) {
-//                    String tmpHostIP = hostIP.split(":")[0];
-//                    tmpHostIP = tmpHostIP.split("/")[1];
-//
-//                    System.out.println("tmp: " + tmpHostIP);
-//
-//                    sock2 = new Socket(tmpHostIP, 8080);
-//                    isr = new ObjectInputStream(sock2.getInputStream());
-//                    response = isr.readObject();
-//                    System.out.println("tmp response: " + tmpHostIP);
-//                    if (response.toString().contains("/")) {
-//                        System.out.println("tmp response bad: " + response.toString());
-//                        StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
-//                        ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
-//                        tmpOut.writeObject(tmpStringRpcRequest);
-//                        tmpOut.flush();
-//                        sock2.close();
-//                    } else {
-//                        System.out.println("tmp response good: " + hostIP);
-//                        clientList.addClient(hostIP);
-//                    }
-//                    hostIP = response.toString();
-//                }
-//                //clientList.addClient(hostIP);
-//                System.out.println(response);
-//
-//                while (clientHasValue) {
-//                    System.out.println("Please give a string");
-//                    Scanner in = new Scanner(System.in);
-//                    String s = in.nextLine();
-//
-//                    clientHasValue = !s.isEmpty();
-//
-//                    StringRpcRequest stringRpcRequest = generateServerRequest(s);
-//                    ObjectOutputStream out = new ObjectOutputStream(sock2.getOutputStream());
-//                    out.writeObject(stringRpcRequest);
-//                    out.flush();
-//
-//                    if (clientHasValue) {
-//                        isr = new ObjectInputStream(sock2.getInputStream());
-//                        response = isr.readObject();
-//                        if (response instanceof String) {
-//                            System.out.println("Got this from the Server: " + response.toString());
-//
-//                        } else {
-//                            sock2.close();
-//                            throw new InternalError();
-//
-//                        }
-//                    } else {
-//                        System.out.println("Ending Client");
-//                        out = new ObjectOutputStream(sock.getOutputStream());
-//                        out.writeObject(stringRpcRequest);
-//                        out.flush();
-//                        sock.close();
-//                        sock2.close();
-//                        System.exit(0);
-////                        return;
-//                    }
-//                }
-//            }
-
-            // WE ARE CHECKING THE RESULTS
 
             // OPEN CLIENT AS SERVER
             new ServerWait(clientList).start();
@@ -197,9 +131,6 @@ public class ResponseRemoteImpl implements Response {
 
                     }
                 } else {
-//                    System.out.println("Ending Client");
-//                    sock.close();
-//                    System.exit(0);
                     System.out.println("Ending Client");
                     out = new ObjectOutputStream(sock.getOutputStream());
                     out.writeObject(stringRpcRequest);
@@ -209,12 +140,11 @@ public class ResponseRemoteImpl implements Response {
                     if (!clientHost.isEmpty()) {
                         out = new ObjectOutputStream(sock2.getOutputStream());
                         stringRpcRequest = generateServerRequest(s);
-                        System.out.println(stringRpcRequest.toString());
                         out.writeObject(stringRpcRequest);
                         out.flush();
                         sock2.close();
                     }
-                    return;
+                    System.exit(0);
                 }
             }
 
@@ -327,12 +257,8 @@ class ServerThread extends Thread {
         while(hasValue) {
             String request = null;
             try {
-                System.out.println("Fail 1");
-                System.out.println(sock.getInputStream().toString());
                 ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
-                System.out.println("Fail 2");
                 Object object = isr.readObject();
-                System.out.println("Fail 3");
 
                 if (object instanceof  StringRpcRequest) {
                     StringRpcRequest stringRpcRequest = (StringRpcRequest) object;
@@ -341,7 +267,6 @@ class ServerThread extends Thread {
 
                     if ("request".equals(stringRpcRequest.getMethod())) {
                         if (tmpString.isEmpty()) {
-//                            System.out.println(clientList.getClients().isEmpty());
                             clientList.removeClient(clientName);
                             hasValue = false;
                             sock.close();
@@ -360,8 +285,7 @@ class ServerThread extends Thread {
                     System.out.println("error!");
                 }
             } catch (Exception e) {
-                //e.printStackTrace();
-                //System.out.println(e);
+                e.printStackTrace();
             }
         }
     }
