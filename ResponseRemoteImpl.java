@@ -54,6 +54,7 @@ public class ResponseRemoteImpl implements Response {
                     ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
                     tmpOut.writeObject(tmpStringRpcRequest);
                     tmpOut.flush();
+                    System.out.println("heck");
                     sock2.close();
 
                     // THIS IS THE NEWLY SUGGESTED CLIENT TO CONNECT TO
@@ -63,6 +64,7 @@ public class ResponseRemoteImpl implements Response {
 
                     //CONNECT TO NEW CLIENT HOST
                     sock2 = new Socket(tmpHostIP, 8080);
+                    System.out.println("lit");
                     isr = new ObjectInputStream(sock2.getInputStream());
 
                     //CHECK RESPONSE
