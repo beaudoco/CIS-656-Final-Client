@@ -19,13 +19,17 @@ public class ResponseRemoteImpl implements Response {
         ClientList clientList = new ClientList();
 
         try {
+            // CONNECT TO SERVER
             sock = new Socket(server, PORT);
-//            sock = new Socket("localhost", PORT);
+
+            // OPEN CLIENT AS SERVER
             new ServerWait(clientList).start();
 
+            // GET RESPONSE FROM SERVER
             ObjectInputStream isr = new ObjectInputStream(sock.getInputStream());
             Object response = isr.readObject();
 
+            // THIS IS IF THERE IS ALREADY A CLIENT HOST
             if (response.toString().contains("/")) {
                 String hostIP = response.toString();
 
@@ -38,19 +42,21 @@ public class ResponseRemoteImpl implements Response {
                     sock2 = new Socket(tmpHostIP, 8080);
                     isr = new ObjectInputStream(sock2.getInputStream());
                     response = isr.readObject();
-
+                    System.out.println("tmp response: " + tmpHostIP);
                     if (response.toString().contains("/")) {
+                        System.out.println("tmp response bad: " + response.toString());
                         StringRpcRequest tmpStringRpcRequest = generateServerRequest("");
                         ObjectOutputStream tmpOut = new ObjectOutputStream(sock2.getOutputStream());
                         tmpOut.writeObject(tmpStringRpcRequest);
                         tmpOut.flush();
                         sock2.close();
                     } else {
+                        System.out.println("tmp response good: " + hostIP);
                         clientList.addClient(hostIP);
                     }
                     hostIP = response.toString();
                 }
-                clientList.addClient(hostIP);
+                //clientList.addClient(hostIP);
                 System.out.println(response);
 
                 while (clientHasValue) {
@@ -89,8 +95,10 @@ public class ResponseRemoteImpl implements Response {
                 }
             }
 
+            // WE ARE CHECKING THE RESULTS
             System.out.println(response);
 
+            // THIS IS COMMUNICATION BETWEEN THE MAIN SERVER AND THE CLIENT
             while (serverHasValue) {
                 System.out.println("Please give a string");
                 Scanner in = new Scanner(System.in);
@@ -129,16 +137,17 @@ public class ResponseRemoteImpl implements Response {
 
         } catch (Exception e) {
             System.out.println(e);
-
             throw new InternalError();
         }
     }
 
+    // RESPONSE TO A CONNECTED CLIENT
     @Override
     public String welcomeMessage() {
         return ("Hello, you are in the club \r\n");
     }
 
+    // CONTROLS COMMUNICATION BETWEEN MACHINES
     private StringRpcRequest generateServerRequest(String val) {
         StringRpcRequest stringRpcRequest = new StringRpcRequest();
         stringRpcRequest.setString(val);
@@ -147,6 +156,7 @@ public class ResponseRemoteImpl implements Response {
     }
 }
 
+// SETTING UP CLIENT AS SERVER
 class ServerWait extends Thread {
     ClientList clientList;
     static int clientCount = 0;
@@ -189,6 +199,7 @@ class ServerWait extends Thread {
     }
 }
 
+// USED FOR COMMUNICATION BETWEEN CLIENTS
 class ServerThread extends Thread {
     protected Socket sock;
     protected int clientNumber;
