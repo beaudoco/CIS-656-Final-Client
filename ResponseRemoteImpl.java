@@ -126,8 +126,8 @@ public class ResponseRemoteImpl implements Response {
                             out.flush();
                             sock2.close();
                         }
-//                        System.exit(0);
-                        throw new InternalError();
+                        System.exit(0);
+//                        throw new InternalError();
 
                     }
                 } else {
