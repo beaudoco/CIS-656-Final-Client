@@ -303,7 +303,7 @@ class ServerThread extends Thread {
         }
 
         try {
-            if (clientList.getClients().size() <= 2) {
+            if (clientList.getClients().size() <= 3) {
                 out.writeObject(response.welcomeMessage());
                 out.flush();
             } else {
